@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DES Preparation Calculator</title>
+<style>
+:root { color-scheme: light dark; --bg: light-dark(#f4f7f5,#111a17); --panel: light-dark(#ffffff,#1b2722); --text: light-dark(#1d2b25,#edf5f0); --muted: light-dark(#627168,#aabbb1); --border: light-dark(#d9e4dd,#35463d); --accent: light-dark(#176b50,#73d4a9); --soft: light-dark(#e4f2eb,#233d31); }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 32px 18px 48px; }
+header { margin-bottom: 24px; }
+.eyebrow { color: var(--accent); font-weight: 750; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; margin: 8px 0 10px; letter-spacing: -.035em; }
+p { color: var(--muted); margin: 0; }
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin: 18px 0; }
+h2 { font-size: 1.15rem; margin: 0 0 18px; }
+.grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+label { display: block; font-weight: 650; font-size: .9rem; margin-bottom: 7px; }
+input { width: 100%; min-width: 0; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 10px; padding: 12px; font: inherit; }
+input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.field-note { display: block; color: var(--muted); font-size: .78rem; margin-top: 5px; }
+.results { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.result { background: var(--soft); border-radius: 14px; padding: 18px; }
+.result .name { font-size: .9rem; color: var(--muted); overflow-wrap: anywhere; }
+.result output { display: block; color: var(--accent); font-size: clamp(1.6rem,4vw,2.2rem); font-weight: 800; letter-spacing: -.03em; margin-top: 4px; overflow-wrap: anywhere; }
+.total { display: flex; justify-content: space-between; gap: 12px; padding-top: 18px; margin-top: 16px; border-top: 1px solid var(--border); }
+button { border: 0; border-radius: 10px; padding: 11px 15px; background: var(--accent); color: light-dark(#fff,#10231a); font: inherit; font-weight: 750; cursor: pointer; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.error { color: #e6a17c; min-height: 1.4em; margin-top: 10px; font-size: .9rem; }
+.formula { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9rem; overflow-wrap: anywhere; color: var(--muted); }
+footer { color: var(--muted); font-size: .82rem; margin-top: 22px; }
+@media (max-width: 560px) { .grid, .results { grid-template-columns: 1fr; } .panel { padding: 18px; } main { padding-top: 24px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Laboratory tool</div>
+    <h1>DES Preparation Calculator</h1>
+    <p>Calculate the mass of hydrogen-bond acceptor (HBA) and hydrogen-bond donor (HBD) for a chosen molar ratio and total batch mass.</p>
+  </header>
+  <section class="panel" aria-labelledby="inputs-title">
+    <h2 id="inputs-title">Enter your preparation details</h2>
+    <div class="grid">
+      <div>
+        <label for="hba">HBA name</label>
+        <input id="hba" value="HBA" autocomplete="off">
+      </div>
+      <div>
+        <label for="hbd">HBD name</label>
+        <input id="hbd" value="HBD" autocomplete="off">
+      </div>
+      <div>
+        <label for="mwA">HBA molar mass (g/mol)</label>
+        <input id="mwA" type="number" min="0.000001" step="any" value="119.12">
+      </div>
+      <div>
+        <label for="mwD">HBD molar mass (g/mol)</label>
+        <input id="mwD" type="number" min="0.000001" step="any" value="76.09">
+      </div>
+      <div>
+        <label for="ratioA">HBA ratio coefficient</label>
+        <input id="ratioA" type="number" min="0.000001" step="any" value="1">
+        <span class="field-note">For a 1:2 ratio, enter 1 here.</span>
+      </div>
+      <div>
+        <label for="ratioD">HBD ratio coefficient</label>
+        <input id="ratioD" type="number" min="0.000001" step="any" value="2">
+        <span class="field-note">For a 1:2 ratio, enter 2 here.</span>
+      </div>
+      <div>
+        <label for="batch">Desired total batch mass (g)</label>
+        <input id="batch" type="number" min="0.000001" step="any" value="10">
+      </div>
+    </div>
+    <div class="error" id="error" role="status" aria-live="polite"></div>
+  </section>
+  <section class="panel" aria-labelledby="results-title">
+    <h2 id="results-title">Weighing results</h2>
+    <div class="results">
+      <div class="result">
+        <div class="name" id="nameA">HBA</div>
+        <output id="massA" for="mwA ratioA mwD ratioD batch">3.0000 g</output>
+      </div>
+      <div class="result">
+        <div class="name" id="nameD">HBD</div>
+        <output id="massD" for="mwA ratioA mwD ratioD batch">7.0000 g</output>
+      </div>
+    </div>
+    <div class="total"><span>Total calculated mass</span><strong id="total">10.0000 g</strong></div>
+    <div class="total"><span>Molar ratio (HBA:HBD)</span><strong id="ratio">1 : 2</strong></div>
+    <div class="actions">
+      <button id="copy">Copy results</button>
+      <button class="secondary" id="reset" type="button">Reset example</button>
+    </div>
+    <div class="error" id="copyStatus" role="status" aria-live="polite"></div>
+  </section>
+  <section class="panel">
+    <h2>Formula</h2>
+    <p class="formula">m(HBA) = m(total) × [a × MW(HBA)] / [a × MW(HBA) + b × MW(HBD)]</p>
+    <p class="formula" style="margin-top:10px">m(HBD) = m(total) × [b × MW(HBD)] / [a × MW(HBA) + b × MW(HBD)]</p>
+  </section>
+  <footer>Assumption: the batch contains only HBA and HBD. Any water or additional ingredients are excluded from the requested total mass. Confirm chemical identity, molar mass, purity and intended ratio before weighing.</footer>
+</main>
+<script>
+const ids = ["hba","hbd","mwA","mwD","ratioA","ratioD","batch"];
+const el = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+const fmt = n => n.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4});
+function calculate() {
+  const vals = ["mwA","mwD","ratioA","ratioD","batch"].map(k => Number(el[k].value));
+  const error = document.getElementById("error");
+  if (vals.some((v,i) => !el[["mwA","mwD","ratioA","ratioD","batch"][i]].value.trim() || !Number.isFinite(v) || v <= 0)) {
+    error.textContent = "Enter positive values for both molar masses, both ratio coefficients and the total batch mass.";
+    ["massA","massD","total"].forEach(id => document.getElementById(id).textContent = "—");
+    document.getElementById("ratio").textContent = "—";
+    return;
+  }
+  error.textContent = "";
+  const [mwA,mwD,a,b,batch] = vals;
+  const denominator = a * mwA + b * mwD;
+  const mA = batch * a * mwA / denominator;
+  const mD = batch * b * mwD / denominator;
+  document.getElementById("nameA").textContent = el.hba.value.trim() || "HBA";
+  document.getElementById("nameD").textContent = el.hbd.value.trim() || "HBD";
+  document.getElementById("massA").textContent = fmt(mA) + " g";
+  document.getElementById("massD").textContent = fmt(mD) + " g";
+  document.getElementById("total").textContent = fmt(mA + mD) + " g";
+  document.getElementById("ratio").textContent = `${a} : ${b}`;
+}
+ids.forEach(id => el[id].addEventListener("input", calculate));
+document.getElementById("copy").addEventListener("click", async () => {
+  const text = `DES preparation results\n${el.hba.value || "HBA"}: ${document.getElementById("massA").textContent}\n${el.hbd.value || "HBD"}: ${document.getElementById("massD").textContent}\nTotal: ${document.getElementById("total").textContent}\nMolar ratio (HBA:HBD): ${document.getElementById("ratio").textContent}`;
+  const status = document.getElementById("copyStatus");
+  try { await navigator.clipboard.writeText(text); status.textContent = "Results copied."; }
+  catch (_) { status.textContent = "Clipboard access was blocked. Select and copy the results manually."; }
+});
+document.getElementById("reset").addEventListener("click", () => {
+  const defaults = {hba:"HBA",hbd:"HBD",mwA:"119.12",mwD:"76.09",ratioA:"1",ratioD:"2",batch:"10"};
+  Object.entries(defaults).forEach(([k,v]) => el[k].value = v);
+  document.getElementById("copyStatus").textContent = "";
+  calculate();
+});
+calculate();
+</script>
+</body>
+</html>
